@@ -1,2 +1,1 @@
 DOTNET_STARTUP_PROJECT=Gcpe.Hub.API/Gcpe.Hub.API.csproj
-DOTNET_TEST_PROJECTS=Gcpe.Hub.API.Tests/Gcpe.Hub.API.Tests.csproj
