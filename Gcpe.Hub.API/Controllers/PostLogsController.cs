@@ -15,7 +15,6 @@ namespace Gcpe.Hub.API.Controllers
     {
         private readonly HubDbContext dbContext;
         private readonly IMapper mapper;
-
         public PostLogsController(HubDbContext dbContext,
           ILogger<PostLogsController> logger,
           IMapper mapper) : base(logger)
