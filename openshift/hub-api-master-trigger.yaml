@@ -1,0 +1,20 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: el-hub-api-master-github
+spec:
+  serviceAccountName: pipeline
+  interceptors:
+    - ref:
+        name: "github"
+      params:
+        - name: "secretRef"
+          value:
+            secretName: hub-api-master-pipeline-secret
+            secretKey: WebHookSecretKey
+        - name: "eventTypes"
+          value: ["push"]
+  bindings:
+    - ref: gcpe-hub-api-master
+  template:
+    ref: gcpe-hub-api-master
