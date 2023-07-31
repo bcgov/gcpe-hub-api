@@ -36,7 +36,7 @@ namespace Gcpe.Hub.API.Controllers
                 IQueryable<Ministry> dbMinistries = dbContext.Ministry;
 
                 IActionResult res = HandleModifiedSince(ref lastModified, ref lastModifiedNextCheck, () => dbMinistries.OrderByDescending(p => p.Timestamp).FirstOrDefault()?.Timestamp);
-                return res ?? Ok(mapper.Map<List<Models.Ministry>>(dbMinistries.Where(m => m.IsActive).OrderBy(m => m.SortOrder).ThenBy(m => m.DisplayName).ToList()));
+                return res ?? Ok(mapper.Map<List<Models.Ministry>>(dbMinistries.Where(m => (m.IsActive && !m.Abbreviation.Equals("JIC"))).OrderBy(m => m.SortOrder).ThenBy(m => m.DisplayName).ToList()));
             }
             catch (Exception ex)
             {
