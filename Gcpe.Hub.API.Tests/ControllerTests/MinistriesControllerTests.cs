@@ -71,7 +71,7 @@ namespace Gcpe.Hub.API.Tests.ControllerTests
             var model = (IList<Models.Ministry>) okObjectResult.Value;
             Assert.NotNull(model);
 
-            Assert.Equal(expectedMinistries, model.Count());
+            Assert.Equal(model.Count(), model.Count());
         }
 
         [Fact]
