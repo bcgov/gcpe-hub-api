@@ -144,7 +144,7 @@
         "displayName": "Resources CPU Limit",
         "description": "The resources CPU limit (in cores) for this build.",
         "required": true,
-        "value": "1"
+        "value": "200m"
       },
       {
         "name": "MEMORY_LIMIT",
@@ -158,7 +158,7 @@
         "displayName": "Resources CPU Request",
         "description": "The resources CPU request (in cores) for this build.",
         "required": true,
-        "value": "1"
+        "value": "200m"
       },
       {
         "name": "MEMORY_REQUEST",
