@@ -39,4 +39,4 @@ jobs:
 
       - name: Start OpenShift Build
         run: |
-          oc start-build bc/hub-api-develop --wait
+          oc start-build bc/hub-api-develop-docker --wait
