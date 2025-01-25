@@ -154,7 +154,7 @@ parameters:
   - name: CPU_LIMIT
     displayName: CPU Limit
     description: Maximum amount of CPU the container can use.
-    value: "1"
+    value: 200m
   - name: MEMORY_LIMIT
     displayName: Memory Limit
     description: Maximum amount of memory the container can use.
@@ -162,7 +162,7 @@ parameters:
   - name: CPU_REQUEST
     displayName: CPU Request
     description: Starting amount of CPU the container can use.
-    value: 100m
+    value: 200m
   - name: MEMORY_REQUEST
     displayName: Memory Request
     description: Starting amount of memory the container can use.
