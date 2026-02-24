@@ -4,21 +4,19 @@ using AutoMapper;
 using Gcpe.Hub.API.Helpers;
 using Gcpe.Hub.Data.Entity;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -26,7 +24,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using Microsoft.IdentityModel.Logging;
 
 namespace Gcpe.Hub.API
 {
@@ -60,16 +57,12 @@ namespace Gcpe.Hub.API
             }
             this.ConfigureAuthorizationPolicies(services);
 
-            services.AddMvc(opt =>
-            {
-                opt.EnableEndpointRouting = false;
-            })
+            services.AddControllers()
                 .AddNewtonsoftJson(opt =>
                 {
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                });
 
 
             services.AddSwaggerGen(setupAction =>
@@ -130,12 +123,15 @@ namespace Gcpe.Hub.API
 
         public virtual void ConfigureAzureAuth(IServiceCollection services)
         {
-            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-                .AddAzureADBearer(options => Configuration.Bind("AzureAD", options));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAD"));
 
-            services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
+            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
-                options.Authority = options.Authority + "/v2.0/";
+                if (!string.IsNullOrWhiteSpace(options.Authority))
+                {
+                    options.Authority = options.Authority.TrimEnd('/') + "/v2.0/";
+                }
                 options.TokenValidationParameters.ValidAudiences = new string[] { options.Audience, $"api://{options.Audience}" };
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer;
             });
@@ -190,22 +186,27 @@ namespace Gcpe.Hub.API
                 // app.UseHsts();
             }
 
-            app.UseHealthChecks("/hc", new HealthCheckOptions { AllowCachingResponses = false });
-
             // app.UseHttpsRedirection();
+
+            app.UseRouting();
 
             // temporary CORS fix
             app.UseCors(opts => opts.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed((host) => true).AllowCredentials());
 
             app.UseAuthentication();
-
-            app.UseMvc();
+            app.UseAuthorization();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.OAuthClientId(Configuration["AuthType"] == "AzureAD" ? Configuration["AzureAD:ClientId"] : Configuration["Keycloak:Audience"]);
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "BC Gov Hub API service");
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions { AllowCachingResponses = false });
+                endpoints.MapControllers();
             });
         }
     }
