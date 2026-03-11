@@ -128,11 +128,6 @@ namespace Gcpe.Hub.API
 
             services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
-                if (!string.IsNullOrWhiteSpace(options.Authority))
-                {
-                    options.Authority = options.Authority.TrimEnd('/') + "/v2.0/";
-                }
-                options.TokenValidationParameters.ValidAudiences = new string[] { options.Audience, $"api://{options.Audience}" };
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer;
             });
         }
