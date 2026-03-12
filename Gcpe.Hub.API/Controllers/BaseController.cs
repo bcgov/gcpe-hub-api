@@ -32,10 +32,13 @@ namespace Gcpe.Hub.API.Controllers
         {
             var now = DateTime.Now;
             ResponseHeaders responseHeaders = Response?.GetTypedHeaders();
-            if (lastModifiedNextCheck <= now && responseHeaders?.CacheControl.MaxAge.HasValue == true)
+            var cacheMaxAge = responseHeaders?.CacheControl?.MaxAge;
+
+            // Response cache headers may not be populated yet when this runs.
+            if (lastModifiedNextCheck <= now && cacheMaxAge.HasValue)
             {
                 lastModified = lastModifiedCheckFn();
-                lastModifiedNextCheck = now.Add(responseHeaders.CacheControl.MaxAge.Value);
+                lastModifiedNextCheck = now.Add(cacheMaxAge.Value);
             }
             if (lastModified.HasValue)
             {
