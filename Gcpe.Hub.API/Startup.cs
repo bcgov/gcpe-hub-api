@@ -123,20 +123,6 @@ namespace Gcpe.Hub.API
 
         public virtual void ConfigureAzureAuth(IServiceCollection services)
         {
-<<<<<<< HEAD
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAD"));
-
-            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                if (!string.IsNullOrWhiteSpace(options.Authority))
-                {
-                    options.Authority = options.Authority.TrimEnd('/') + "/v2.0/";
-                }
-                options.TokenValidationParameters.ValidAudiences = new string[] { options.Audience, $"api://{options.Audience}" };
-                options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer;
-            });
-=======
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAD"));
 
@@ -144,7 +130,6 @@ namespace Gcpe.Hub.API
             {
                 options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.ValidateAadIssuer;
             });
->>>>>>> d71826540eebe91855709df7cc62416f3ed37a1d
         }
 
         public virtual void ConfigureKeycloakAuth(IServiceCollection services)
